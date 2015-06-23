@@ -1,0 +1,18 @@
+{"nodes":[
+{"name":"Big Question"},
+{"name":"Question 1 a"},
+{"name":"Question 1 b"},
+{"name":"Question 2 a"},
+{"name":"Question 2 b"},
+{"name":"Question 3"},
+{"name":"End Game?"}
+],
+"links":[
+{"source":0,"target":1,"value":52},
+{"source":0,"target":2,"value":54},
+{"source":1,"target":3,"value":50},
+{"source":2,"target":4,"value":52},
+{"source":3,"target":5,"value":54},
+{"source":4,"target":5,"value":56},
+{"source":5,"target":6,"value":50}
+]}
