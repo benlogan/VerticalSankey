@@ -71,20 +71,18 @@ d3.sankey = function() {
         // big changes here obviously, more comments to follow
         var x0 = d.source.x + d.sy + d.dy / 2,
             x1 = d.target.x + d.ty + d.dy / 2,
-          xi = d3.interpolateNumber(x0, x1),
-          x2 = xi(curvature),
-          x3 = xi(1 - curvature),
           y0 = d.source.y + nodeWidth,
-          y1 = d.target.y;
+          y1 = d.target.y,
+          yi = d3.interpolateNumber(y0, y1),
+          y2 = yi(curvature),
+          y3 = yi(1 - curvature);
 
         // ToDo - nice to have - allow flow up or down! Plenty of use cases for starting at the bottom,
         // but main one is trickle down (economics, budgets etc), not up
         
-        var newY = ((y1 - y0) / 2) + y0;
-        
       return "M" + x0 + "," + y0        // start (of SVG path)
-           + "C" + x0 + "," + newY      // CP1 (curve control point)
-           + " " + x1 + "," + newY      // CP2
+           + "C" + x0 + "," + y2      // CP1 (curve control point)
+           + " " + x1 + "," + y3      // CP2
            + " " + x1 + "," + y1;       // end
     }
 
