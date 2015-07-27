@@ -3,7 +3,7 @@ body {
 }
 
 #chart {
-  height: 650px; 'must at least match the svg, to place content after it!
+  height: 650px; /* must at least match the svg, to place content after it!*/
 }
 
 .node rect {
@@ -19,7 +19,7 @@ body {
 
 .link {
   fill: none;
-  'stroke: #000;
+  /*stroke: #000;*/
   stroke-opacity: .5;
 }
 

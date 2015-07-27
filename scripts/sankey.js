@@ -63,28 +63,26 @@ d3.sankey = function() {
       // x1 = line end X
       // y1 = line end Y
       
-      // x2 = control point 1 (X pos)
-      // x3 = control point 2 (X pos)
+      // y2 = control point 1 (Y pos)
+      // y3 = control point 2 (Y pos)
       
     function link(d) {
 
         // big changes here obviously, more comments to follow
         var x0 = d.source.x + d.sy + d.dy / 2,
             x1 = d.target.x + d.ty + d.dy / 2,
-          xi = d3.interpolateNumber(x0, x1),
-          x2 = xi(curvature),
-          x3 = xi(1 - curvature),
           y0 = d.source.y + nodeWidth,
-          y1 = d.target.y;
+          y1 = d.target.y,
+          yi = d3.interpolateNumber(y0, y1),
+          y2 = yi(curvature),
+          y3 = yi(1 - curvature);
 
         // ToDo - nice to have - allow flow up or down! Plenty of use cases for starting at the bottom,
         // but main one is trickle down (economics, budgets etc), not up
         
-        var newY = ((y1 - y0) / 2) + y0;
-        
       return "M" + x0 + "," + y0        // start (of SVG path)
-           + "C" + x0 + "," + newY      // CP1 (curve control point)
-           + " " + x1 + "," + newY      // CP2
+           + "C" + x0 + "," + y2      // CP1 (curve control point)
+           + " " + x1 + "," + y3      // CP2
            + " " + x1 + "," + y1;       // end
     }
 
@@ -138,11 +136,21 @@ d3.sankey = function() {
         .entries(nodes)
         .map(function(d) { return d.values; }); // values! we are using the values also as a way to seperate nodes (not just stroke width)?
 
+      // this bit is actually the node sizes (widths)
+      //var ky = (size[1] - (nodes.length - 1) * nodePadding) / d3.sum(nodes, value)
+      // this should be only source nodes surely (level 1)
+      var ky = (size[0] - (nodesByBreadth[0].length - 1) * nodePadding) / d3.sum(nodesByBreadth[0], value);
+      // I'd like them to be much bigger, this calc doesn't seem to fill the space!?
+
       nodesByBreadth.forEach(function(nodes) {
         nodes.forEach(function(node, i) {
           node.x = i;
-          //node.dy = node.value * ky;
+          node.dy = node.value * ky;
         });
+      });
+
+      links.forEach(function(link) {
+          link.dy = link.value * ky;
       });
       
       resolveCollisions();
@@ -267,25 +275,6 @@ d3.sankey = function() {
         moveSinksDown(y);
     
         scaleNodeBreadths((size[1] - nodeWidth) / (y - 1));
-
-        // this bit is actually the node sizes (widths)
-        //var ky = (size[1] - (nodes.length - 1) * nodePadding) / d3.sum(nodes, value)
-        
-        var nodesByBreadth = d3.nest()
-        .key(function(d) { return d.y; }) // was x
-        .sortKeys(d3.ascending)
-        .entries(nodes)
-        .map(function(d) { return d.values; });
-        // this should be only source nodes surely (level 1)
-        var ky = (size[0] - (nodesByBreadth[0].length - 1) * nodePadding) / d3.sum(nodesByBreadth[0], value);
-        // I'd like them to be much bigger, this calc doesn't seem to fill the space!?
-        nodes.forEach(function(node, i) {
-            node.dy = node.value * ky;
-        });
-
-        links.forEach(function(link) {
-            link.dy = link.value * ky;
-        });
     }
     
   // .ty is the offset in terms of node position of the link (target)
